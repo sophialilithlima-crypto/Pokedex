@@ -7,9 +7,10 @@ const closeBtn = document.getElementById("close");
 
 let listaPokemons = [];
 
+/* CARREGAR POKÉMONS */
 async function carregarPokemons() {
   try {
-    const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=105");
+    const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1028");
     const data = await res.json();
 
     for (let p of data.results) {
@@ -26,36 +27,81 @@ async function carregarPokemons() {
   }
 }
 
+/* MOSTRAR CARDS */
 function mostrarPokemons(lista) {
   container.innerHTML = "";
 
   lista.forEach(pokemon => {
     container.innerHTML += `
-      <div class="card" onclick="abrirModal(${pokemon.id})">
+  <div class="card" data-id="${pokemon.id}">
         <img src="${pokemon.sprites.front_default}">
         <h3>${pokemon.name}</h3>
       </div>
     `;
   });
+
+  /* ADICIONA EVENTO DE CLIQUE NOS CARDS */
+  document.querySelectorAll(".card").forEach(card => {
+    card.addEventListener("click", () => {
+      const id = parseInt(card.getAttribute("data-id"));
+      abrirModal(id);
+    });
+  });
 }
 
-function abrirModal(id) {
+/* ABRIR MODAL */
+
+async function abrirModal(id) {
   const pokemon = listaPokemons.find(p => p.id === id);
 
+  // BUSCAR DADOS DA ESPÉCIE (pra pegar geração)
+  const speciesRes = await fetch(pokemon.species.url);
+  const speciesData = await speciesRes.json();
+
+  const tipoPrincipal = pokemon.types[0].type.name;
+
+  // PEGAR STATS
+  const hp = pokemon.stats.find(s => s.stat.name === "hp").base_stat;
+  const attack = pokemon.stats.find(s => s.stat.name === "attack").base_stat;
+  const defense = pokemon.stats.find(s => s.stat.name === "defense").base_stat;
+  const speed = pokemon.stats.find(s => s.stat.name === "speed").base_stat;
+
   modalInfo.innerHTML = `
-    <h2>${pokemon.name}</h2>
-    <img src="${pokemon.sprites.front_default}">
-    <p><strong>Altura:</strong> ${pokemon.height}</p>
-    <p><strong>Peso:</strong> ${pokemon.weight}</p>
-    <p><strong>Tipo:</strong> ${pokemon.types.map(t => t.type.name).join(", ")}</p>
+    <div class="${tipoPrincipal}" style="padding: 15px; border-radius: 10px;">
+      <h2>${pokemon.name}</h2>
+      <img src="${pokemon.sprites.front_default}">
+
+      <p><strong>Espécie:</strong> ${speciesData.name}</p>
+
+      <p><strong>Altura:</strong> ${(pokemon.height / 10).toFixed(1)} m</p>
+      <p><strong>Peso:</strong> ${(pokemon.weight / 10).toFixed(1)} kg</p>
+
+      <p><strong>Tipo:</strong> ${pokemon.types.map(t => t.type.name).join(", ")}</p>
+
+      <p><strong>Habilidades:</strong> ${pokemon.abilities.map(a => a.ability.name).join(", ")}</p>
+
+      <hr>
+
+      <p><strong>HP:</strong> ${hp}</p>
+      <p><strong>Ataque:</strong> ${attack}</p>
+      <p><strong>Defesa:</strong> ${defense}</p>
+      <p><strong>Velocidade:</strong> ${speed}</p>
+    </div>
   `;
 
   modal.classList.remove("hidden");
 }
-
-closeBtn.addEventListener("click", () => {
+/* FECHAR MODAL (CORRIGIDO) */
+closeBtn.onclick = () => {
   modal.classList.add("hidden");
-});
+};
+
+/* FECHAR CLICANDO FORA */
+modal.onclick = (e) => {
+  if (e.target === modal) {
+    modal.classList.add("hidden");
+  }
+};
 
 /* BUSCA */
 searchInput.addEventListener("input", () => {
