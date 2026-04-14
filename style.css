@@ -1,11 +1,112 @@
+/*
+  Variáveis para cores:
+  --fundo-principal
+  --texto
+  --texto-inverso
+  --destaque
+  --destaque-inverso
+  --fundo-card
+*/
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:root{
+  --fundo-principal: rgb(231, 231, 231);
+  --texto: black;
+  --texto-inverso: white;
+  --destaque: rgb(224, 121, 152);;
+  --destaque-inverso: lightpink;
+  --fundo-card: white;
+}
+
 body {
-  font-family: Arial;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
   text-align: center;
+  line-height: 1.5em;
+  background-color: var(--fundo-principal);
+  color: var(--texto);
+}
+
+header {
+  background-color: var(--destaque);
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  z-index: 1;
+  top: 0;
+  position: sticky;
+  width: 100%;
 }
 
 #pokedex {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 20px;
+
   padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto; 
+}
+
+#search {
+  margin: 20px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card img {
+  width: 80px;
+}
+
+.card h3 {
+  text-transform: capitalize;
+  font-size: 14px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 250px;
+  text-align: center;
+}
+
+#close {
+  cursor: pointer;
+  float: right;
+  font-size: 20px;
 }
