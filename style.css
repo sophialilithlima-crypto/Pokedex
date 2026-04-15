@@ -14,7 +14,7 @@
 }
 
 :root{
-  --fundo-principal: rgb(231, 231, 231);
+  --fundo-principal: rgb(233, 233, 233);
   --texto: black;
   --texto-inverso: white;
   --destaque: rgb(224, 121, 152);;
@@ -31,8 +31,10 @@ body {
 }
 
 header {
-  background-color: var(--destaque);
-  color: white;
+  background: linear-gradient(var(--destaque), lightpink);
+  color: rgb(255, 255, 255);
+  font-size: 16px;
+  font-weight: 600;
   padding: 20px;
   display: flex;
   justify-content: center;
@@ -42,12 +44,13 @@ header {
   width: 100%;
 }
 
+
 #pokedex {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 20px;
+  gap: 15px;
 
-  padding: 20px;
+  padding: 20px 20px;
   max-width: 1000px;
   margin: 0 auto; 
 }
@@ -64,22 +67,34 @@ header {
   border-radius: 12px;
   padding: 15px;
 
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
   transition: 0.2s;
+  cursor: pointer;
 }
 
 .card:hover {
-  transform: scale(1.05);
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .card img {
-  width: 80px;
+  width: 100px;
+}
+
+.card h4 {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 5px;
 }
 
 .card h3 {
-  text-transform: capitalize;
-  font-size: 14px;
+  font-size: 15px;
+  margin-top: 5px;
+  justify-content: center;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+
 
 .modal {
   position: fixed;
@@ -91,6 +106,7 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
+  backdrop-filter: blur(3px);
 }
 
 .hidden {
@@ -113,46 +129,183 @@ header {
   z-index: 10;
 }
 
-.fire {
-  background: #ff9143;
+/* TODOS OS TIPOS DE POKÉMON */
+
+.normal { background: #a8a878; color: white; }
+
+.fire { background: #f08030; color: white; }
+
+.water { background: #6890f0; color: white; }
+
+.electric { background: #f8d030; }
+
+.grass { background: #78c850; color: white; }
+
+.ice { background: #98d8d8; }
+
+.fighting { background: #c03028; color: white; }
+
+.poison { background: #a040a0; color: white; }
+
+.ground { background: #e0c068; }
+
+.flying { background: #a890f0; }
+
+.psychic { background: #f85888; color: white; }
+
+.bug { background: #a8b820; }
+
+.rock { background: #b8a038; }
+
+.ghost { background: #705898; color: white; }
+
+.dragon { background: #7038f8; color: white; }
+
+.dark { background: #705848; color: white; }
+
+.steel { background: #b8b8d0; }
+
+.fairy { background: #ee99ac; }
+
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+
+  width: 260px;
+  text-align: center;
+
+  animation: aparecer 0.1s ease;
+}
+
+@keyframes aparecer {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+#loadMoreBtn {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#loadMore {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  padding: 12px 20px;
+  border-radius: 15px;
+
+  background: var(--destaque);
+  color: white;
+  border: none;
+
+  cursor: pointer;
+  font-size: 14px;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+
+  z-index: 1000;
+}
+
+#loadMore:hover {
+  transform: translateX(-50%) scale(1.05);
+}
+
+/* Clique */
+#loadMoreBtn:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Desativado */
+#loadMoreBtn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.aviso {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+
+  background: #333;
+  color: white;
+
+  padding: 10px 15px;
+  border-radius: 8px;
+
+  font-size: 14px;
+
+  opacity: 0.9;
+
+  z-index: 2000;
+
+  animation: fade 2s;
+}
+
+.btn {
+  padding: 10px 15px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.evoluir {
+  background: #4caf50;
   color: white;
 }
 
-.water {
-  background: #3790da;
+.voltar {
+  background: #e63946;
   color: white;
 }
 
-.grass {
-  background: #6bbb61;
+.btn:hover {
+  transform: scale(1.05);
+}
+
+.btn:disabled {
+  background: #999;
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.6;
+}
+
+.aviso {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+
+  background: #333;
   color: white;
+
+  padding: 10px 15px;
+  border-radius: 8px;
+
+  z-index: 2000;
+
+  animation: fade 2s;
 }
 
-.electric {
-  background: #ffe062;
-}
-
-.poison {
-  background: #af71d8;
-  color: white;
-}
-
-.flying {
-  background: #bca6ff;
-}
-
-.bug {
-  background: #cadd1dcb;
-}
-
-.normal {
-  background: #caca98;
-}
-
-.ground {
-  background: #e0d569;
-}
-
-.fairy {
-  background: lightpink;
+@keyframes fade {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
 }
