@@ -1,2 +1,3 @@
 # Pokedex
 
+Esta é uma aplicação web de Pokédex que consome dados da PokéAPI para exibir informações sobre diferentes Pokémon de forma interativa. O usuário pode visualizar uma lista com imagem, nome e número de cada Pokémon, além de utilizar a barra de pesquisa para encontrar um específico. Ao clicar em um card, é aberto um modal com informações mais detalhadas, como tipo, altura, peso, habilidades e atributos de batalha. Também é possível visualizar a evolução do Pokémon por meio de um botão, que atualiza os dados exibidos na tela, com a opção de retornar à forma original. O projeto foi desenvolvido utilizando HTML, CSS e JavaScript, com foco na manipulação do DOM e no consumo de dados de uma API externa.
