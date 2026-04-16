@@ -10,74 +10,48 @@ let listaPokemons = [];
 
 let limit = 20;
 let offset = 0;
+let totalPokemons = 0;
 
 let pokemonAtual = null;
 let pokemonOriginal = null;
 
+let cache = {};
+
 /* =========================
-   AVISO
+   UTIL
 ========================= */
-function mostrarAviso(texto) {
-  const aviso = document.createElement("div");
-  aviso.innerText = texto;
-  aviso.classList.add("aviso");
-
-  document.body.appendChild(aviso);
-
-  setTimeout(() => {
-    aviso.remove();
-  }, 2000);
+function formatarNome(nome) {
+  return nome.charAt(0).toUpperCase() + nome.slice(1);
 }
 
 /* =========================
-   CARREGAR POKÉMONS
+   FETCH COM CACHE
 ========================= */
-async function carregarPokemons() {
-  try {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
-    const data = await res.json();
+async function fetchPokemon(nome) {
+  if (cache[nome]) return cache[nome];
 
-    const promises = data.results.map(p =>
-    fetch(p.url).then(res => res.json())
-  );
+  const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${nome}`);
+  const data = await res.json();
 
-const pokemons = await Promise.all(promises);
-
-listaPokemons.push(...pokemons);
-
-    mostrarPokemons(listaPokemons);
-
-  } catch (erro) {
-    console.log("Erro:", erro);
-  }
+  cache[nome] = data;
+  return data;
 }
 
 /* =========================
-   MOSTRAR CARDS
+   PRIMEIRA EVOLUÇÃO
 ========================= */
-function mostrarPokemons(lista) {
-  container.innerHTML = "";
+async function getFirstEvolution(pokemon) {
+  const speciesRes = await fetch(pokemon.species.url);
+  const speciesData = await speciesRes.json();
 
-  lista.forEach(pokemon => {
-    container.innerHTML += `
-      <div class="card" data-id="${pokemon.id}">
-        <h4>#${pokemon.id.toString().padStart(3, "0")}</h4>
-        <img src="${pokemon.sprites.front_default}">
-        <h3>${pokemon.name}</h3>
-      </div>
-    `;
-  });
+  const evoRes = await fetch(speciesData.evolution_chain.url);
+  const evoData = await evoRes.json();
 
-  document.querySelectorAll(".card").forEach(card => {
-    card.addEventListener("click", () => {
-      const id = parseInt(card.getAttribute("data-id"));
-      abrirModal(id);
-    });
-  });
+  return evoData.chain.species.name;
 }
 
 /* =========================
-   EVOLUÇÃO
+   PRÓXIMA EVOLUÇÃO
 ========================= */
 async function getNextEvolution(pokemon) {
   const speciesRes = await fetch(pokemon.species.url);
@@ -100,15 +74,62 @@ async function getNextEvolution(pokemon) {
   return null;
 }
 
-async function temEvolucao(pokemon) {
-  const next = await getNextEvolution(pokemon);
-  return next !== null;
+/* =========================
+   CARREGAR POKÉMONS
+========================= */
+async function carregarPokemons() {
+  try {
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
+    const data = await res.json();
+
+    // 🔥 NOVO: pega o total de pokémons
+    totalPokemons = data.count;
+
+    for (let p of data.results) {
+      const pokemon = await fetchPokemon(p.name);
+      listaPokemons.push(pokemon);
+    }
+
+    mostrarPokemons(listaPokemons);
+
+    // 🔥 NOVO: esconde botão quando acabar
+    if (listaPokemons.length >= totalPokemons) {
+      loadMoreBtn.classList.add("hidden");
+    }
+
+  } catch (erro) {
+    console.log("Erro:", erro);
+  }
+}
+
+/* =========================
+   MOSTRAR CARDS
+========================= */
+function mostrarPokemons(lista) {
+  container.innerHTML = "";
+
+  lista.forEach(pokemon => {
+    container.innerHTML += `
+      <div class="card" data-id="${pokemon.id}">
+        <h4>#${pokemon.id.toString().padStart(3, "0")}</h4>
+        <img src="${pokemon.sprites.front_default}">
+        <h3>${formatarNome(pokemon.name)}</h3>
+      </div>
+    `;
+  });
+
+  document.querySelectorAll(".card").forEach(card => {
+    card.addEventListener("click", () => {
+      const id = parseInt(card.getAttribute("data-id"));
+      abrirModal(id);
+    });
+  });
 }
 
 /* =========================
    RENDER MODAL
 ========================= */
-function renderModal(pokemon, speciesData, podeEvoluir) {
+function renderModal(pokemon, speciesData) {
   const tipoPrincipal = pokemon.types[0].type.name;
 
   const hp = pokemon.stats.find(s => s.stat.name === "hp").base_stat;
@@ -117,8 +138,8 @@ function renderModal(pokemon, speciesData, podeEvoluir) {
   const speed = pokemon.stats.find(s => s.stat.name === "speed").base_stat;
 
   modalInfo.innerHTML = `
-    <div class="${tipoPrincipal}" style="padding: 15px; border-radius: 10px;">
-      <h2>${pokemon.name}</h2>
+    <div class="modal-card ${tipoPrincipal}" style="padding: 15px; border-radius: 10px;">
+      <h2>${formatarNome(pokemon.name)}</h2>
       <img src="${pokemon.sprites.front_default}">
 
       <p><strong>Geração:</strong> ${speciesData.generation.name}</p>
@@ -137,12 +158,9 @@ function renderModal(pokemon, speciesData, podeEvoluir) {
 
       <br>
 
-      <button class="btn evoluir" ${!podeEvoluir ? "disabled" : ""}>
-        Evolução
-      </button>
-
-      <button class="btn voltar">
-        Primeira versão
+      <button class="btn evoluir">Evolução</button>
+      <button class="btn voltar" ${pokemon.name === pokemonOriginal.name ? "disabled" : ""}>
+        Forma inicial
       </button>
     </div>
   `;
@@ -155,14 +173,14 @@ async function abrirModal(id) {
   const pokemon = listaPokemons.find(p => p.id === id);
 
   pokemonAtual = pokemon;
-  pokemonOriginal = pokemon;
+
+  const firstName = await getFirstEvolution(pokemon);
+  pokemonOriginal = await fetchPokemon(firstName);
 
   const speciesRes = await fetch(pokemon.species.url);
   const speciesData = await speciesRes.json();
 
-  const podeEvoluir = await temEvolucao(pokemon);
-
-  renderModal(pokemon, speciesData, podeEvoluir);
+  renderModal(pokemon, speciesData);
 
   modal.classList.remove("hidden");
 
@@ -170,7 +188,7 @@ async function abrirModal(id) {
 }
 
 /* =========================
-   BOTÕES
+   BOTÕES COM ANIMAÇÃO
 ========================= */
 function configurarBotoes() {
   const btnEvoluir = document.querySelector(".evoluir");
@@ -178,44 +196,62 @@ function configurarBotoes() {
 
   if (btnEvoluir) {
     btnEvoluir.onclick = async () => {
-      if (btnEvoluir.disabled) {
-        mostrarAviso("Sem evoluções");
-        return;
-      }
+
+      const card = modalInfo.firstElementChild;
 
       const nextName = await getNextEvolution(pokemonAtual);
 
       if (!nextName) {
-        mostrarAviso("Sem evoluções");
+        btnEvoluir.disabled = true;
+        btnEvoluir.innerText = "Sem evolução";
         return;
       }
 
-      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${nextName}`);
-      const novoPokemon = await res.json();
+      // anima saída
+      card.classList.add("fade-out");
 
-      pokemonAtual = novoPokemon;
+      setTimeout(async () => {
 
-      const speciesRes = await fetch(novoPokemon.species.url);
-      const speciesData = await speciesRes.json();
+        const novoPokemon = await fetchPokemon(nextName);
+        pokemonAtual = novoPokemon;
 
-      const podeEvoluir = await temEvolucao(novoPokemon);
+        const speciesRes = await fetch(novoPokemon.species.url);
+        const speciesData = await speciesRes.json();
 
-      renderModal(novoPokemon, speciesData, podeEvoluir);
-      configurarBotoes();
+        renderModal(novoPokemon, speciesData);
+
+        // anima entrada
+        const novoCard = modalInfo.firstElementChild;
+        novoCard.classList.add("fade-in");
+
+        configurarBotoes();
+
+      }, 300);
     };
   }
 
-  if (btnVoltar) {
+  if (btnVoltar && !btnVoltar.disabled) {
     btnVoltar.onclick = async () => {
-      pokemonAtual = pokemonOriginal;
 
-      const speciesRes = await fetch(pokemonOriginal.species.url);
-      const speciesData = await speciesRes.json();
+      const card = modalInfo.firstElementChild;
 
-      const podeEvoluir = await temEvolucao(pokemonOriginal);
+      card.classList.add("fade-out");
 
-      renderModal(pokemonOriginal, speciesData, podeEvoluir);
-      configurarBotoes();
+      setTimeout(async () => {
+
+        pokemonAtual = pokemonOriginal;
+
+        const speciesRes = await fetch(pokemonOriginal.species.url);
+        const speciesData = await speciesRes.json();
+
+        renderModal(pokemonOriginal, speciesData);
+
+        const novoCard = modalInfo.firstElementChild;
+        novoCard.classList.add("fade-in");
+
+        configurarBotoes();
+
+      }, 300);
     };
   }
 }

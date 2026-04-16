@@ -14,7 +14,7 @@
 }
 
 :root{
-  --fundo-principal: rgb(233, 233, 233);
+  --fundo-principal: rgb(231, 231, 231);
   --texto: black;
   --texto-inverso: white;
   --destaque: rgb(224, 121, 152);;
@@ -23,24 +23,27 @@
 }
 
 body {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   text-align: center;
   line-height: 1.5em;
-  background-color: var(--fundo-principal);
+  background: #2b2b2b;
   color: var(--texto);
 }
 
 header {
-  background: linear-gradient(var(--destaque), lightpink);
-  color: rgb(255, 255, 255);
-  font-size: 16px;
-  font-weight: 600;
-  padding: 20px;
+
+  background: #cc0000;
+  padding: 30px;
+  
+  letter-spacing: 2px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 20px;
+  color: white;
+  text-align: center;
+  font-weight: 700;
   display: flex;
   justify-content: center;
   z-index: 1;
-  top: 0;
-  position: sticky;
   width: 100%;
 }
 
@@ -50,36 +53,49 @@ header {
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 15px;
 
-  padding: 20px 20px;
-  max-width: 1000px;
-  margin: 0 auto; 
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 20px;
+
+  background: #dbdbdb;
+  border-radius: 20px;
+
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 
 #search {
-  margin: 20px;
+  margin-top: 10px;
   padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  width: 220px;
+
+  border-radius: 20px;
+  border: none;
+
+  outline: none;
 }
 
 .card {
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
+  background: #ffffff;
+  border-radius: 15px;
 
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 2px solid #ddd;
+
+  padding: 12px;
+  text-align: center;
 
   transition: 0.2s;
   cursor: pointer;
 }
 
 .card:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  border-color: #cc0000;
+  transform: scale(1.05);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
 }
 
 .card img {
-  width: 100px;
+  width: 80px;
+  height: 80px;
 }
 
 .card h4 {
@@ -113,12 +129,18 @@ header {
   display: none;
 }
 
-.modal-content {
-  background: white;
+  .modal-content {
+  background: #f8f8f8;
+  border-radius: 20px;
+
   padding: 20px;
-  border-radius: 12px;
-  width: 250px;
-  text-align: center;
+  width: 320px;
+
+  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+}
+
+.modal-content h2 {
+  margin-bottom: 10px;
 }
 
 #close {
@@ -204,28 +226,33 @@ header {
   transform: translateX(-50%);
 
   padding: 12px 20px;
-  border-radius: 15px;
+  border-radius: 20px;
 
-  background: var(--destaque);
-  color: white;
   border: none;
+  background: #cc0000;
+  color: white;
 
   cursor: pointer;
-  font-size: 14px;
 
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 
   z-index: 1000;
+
+  transition: 0.2s;
 }
 
 #loadMore:hover {
   transform: translateX(-50%) scale(1.05);
+  background: #a30000;
+}
+
+#loadMore.hidden {
+  display: none;
 }
 
 /* Clique */
-#loadMoreBtn:active {
-  transform: scale(0.97);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+#loadMore:active {
+  transform: translateX(-50%) scale(0.95);
 }
 
 /* Desativado */
@@ -235,34 +262,18 @@ header {
   box-shadow: none;
 }
 
-.aviso {
-  position: fixed;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-
-  background: #333;
+.btn {
+  background: #cc0000;
   color: white;
 
-  padding: 10px 15px;
-  border-radius: 8px;
+  border-radius: 10px;
+  padding: 10px;
 
-  font-size: 14px;
-
-  opacity: 0.9;
-
-  z-index: 2000;
-
-  animation: fade 2s;
+  border: none;
 }
 
-.btn {
-  padding: 10px 15px;
-  margin: 5px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s;
+.btn:hover {
+  background: #fd6d6d;
 }
 
 .evoluir {
@@ -270,13 +281,24 @@ header {
   color: white;
 }
 
-.voltar {
-  background: #e63946;
+.evolution-list {
+  margin-top: 10px;
+}
+
+.evolution-item {
+  padding: 5px 10px;
+  background: #eee;
+  border-radius: 8px;
+}
+
+.evolution-item:hover {
+  background: #c20707f1;
   color: white;
 }
 
-.btn:hover {
-  transform: scale(1.05);
+.voltar {
+  background: #cc0000;
+  color: white;
 }
 
 .btn:disabled {
@@ -286,26 +308,44 @@ header {
   opacity: 0.6;
 }
 
-.aviso {
-  position: fixed;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-
-  background: #333;
-  color: white;
-
-  padding: 10px 15px;
-  border-radius: 8px;
-
-  z-index: 2000;
-
-  animation: fade 2s;
+.btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
+
 
 @keyframes fade {
   0% { opacity: 0; }
   20% { opacity: 1; }
   80% { opacity: 1; }
   100% { opacity: 0; }
+}
+
+.fade-out {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.3s ease;
+}
+
+.fade-in {
+  opacity: 0;
+  transform: scale(1.1);
+  animation: aparecer 0.3s forwards;
+}
+
+@keyframes aparecer {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.flash {
+  animation: flash 0.3s;
+}
+
+@keyframes flash {
+  0% { background: white; }
+  100% { background: transparent; }
 }
