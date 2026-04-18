@@ -1,39 +1,43 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pokedex</title>
+
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/svg+xml" href="favicon.png">
+  <link rel="icon" href="favicon.png">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<header>
-    <h1>Pokedex</h1>
-</header>
-<input type="text" id="search" placeholder="Buscar Pokémon...">
-
-<div class="load-container">
-  <button id="loadMore">Carregar mais</button>
-</div>
-
- <div id="modal" class="modal hidden">
-  <div class="modal-content">
-    <span id="close">&times;</span>
-    <div id="modal-info"></div>
- </div>
-</div>
 
 <body>
-   <div id="pokedex"></div>
+
+  <header>
+    <h1>Pokedex</h1>
+    
+  </header>
+  <input type="text" id="search" placeholder="Buscar Pokémon...">
+  <button id="backToTop">
+  <i class="fas fa-arrow-up"></i></button>
+  <button id="scrollDown">
+  <i class="fas fa-arrow-down"></i></button>
+
+  <div id="pokedex"></div>
+
+  <div class="load-container">
+    <button id="loadMore">Carregar mais</button>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <span id="close">&times;</span>
+      <div id="modal-info"></div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
+
 </body>
 </html>
-<div id="modal" class="modal hidden">
-  <div class="modal-content">
-    <span id="close">&times;</span>
-    <div id="modal-info"></div>
-  </div>
-</div>

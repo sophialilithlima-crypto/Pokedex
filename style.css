@@ -52,6 +52,7 @@ header {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 15px;
+  will-change: transform;
 
   max-width: 1100px;
   margin: 30px auto;
@@ -75,16 +76,14 @@ header {
 }
 
 .card {
-  background: #ffffff;
-  border-radius: 15px;
-
-  border: 2px solid #ddd;
-
-  padding: 12px;
+  background: white;
+  border: 3px solid transparent;
+  border-radius: 12px;
+  padding: 10px;
   text-align: center;
+  cursor: pointer;
 
   transition: 0.2s;
-  cursor: pointer;
 }
 
 .card:hover {
@@ -125,6 +124,27 @@ header {
   backdrop-filter: blur(3px);
 }
 
+.modal-card {
+  background: white;
+  border: 4px solid transparent;
+  border-radius: 16px;
+  padding: 20px;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+
+  text-align: center;
+}
+
+.modal-card::after {
+  content: "";
+  display: block;
+  height: 4px;
+  margin-top: 10px;
+  border-radius: 5px;
+  background: currentColor;
+  opacity: 0.2;
+}
+
 .hidden {
   display: none;
 }
@@ -150,45 +170,6 @@ header {
   position: relative;
   z-index: 10;
 }
-
-/* TODOS OS TIPOS DE POKÉMON */
-
-.normal { background: #a8a878; color: white; }
-
-.fire { background: #f08030; color: white; }
-
-.water { background: #6890f0; color: white; }
-
-.electric { background: #f8d030; }
-
-.grass { background: #78c850; color: white; }
-
-.ice { background: #98d8d8; }
-
-.fighting { background: #c03028; color: white; }
-
-.poison { background: #a040a0; color: white; }
-
-.ground { background: #e0c068; }
-
-.flying { background: #a890f0; }
-
-.psychic { background: #f85888; color: white; }
-
-.bug { background: #a8b820; }
-
-.rock { background: #b8a038; }
-
-.ghost { background: #705898; color: white; }
-
-.dragon { background: #7038f8; color: white; }
-
-.dark { background: #705848; color: white; }
-
-.steel { background: #b8b8d0; }
-
-.fairy { background: #ee99ac; }
-
 
 .modal-content {
   background: white;
@@ -348,4 +329,122 @@ header {
 @keyframes flash {
   0% { background: white; }
   100% { background: transparent; }
+}
+
+#backToTop {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+
+  width: 45px;
+  height: 45px;
+
+  border-radius: 50%;
+  border: none;
+
+  background: #cc0000;
+  color: white;
+
+  display: none; /* controlado pelo JS */
+
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+
+  z-index: 9999;
+
+  transition: 0.2s;
+}
+
+#backToTop i {
+  font-size: 18px;
+}
+
+#backToTop:hover {
+  background: #ff1a1a;
+  transform: scale(1.1);
+}
+
+#backToTop:active {
+  transform: scale(0.9);
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 5px 0;
+}
+
+.bar {
+  flex: 1;
+  height: 8px;
+  background: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: #4caf50;
+  border-radius: 5px;
+}
+
+.modal-card.fire { border-color: #f08030; }
+.modal-card.water { border-color: #6890f0; }
+.modal-card.grass { border-color: #78c850; }
+.modal-card.electric { border-color: #f8d030; }
+.modal-card.ice { border-color: #98d8d8; }
+.modal-card.fighting { border-color: #c03028; }
+.modal-card.poison { border-color: #a040a0; }
+.modal-card.ground { border-color: #e0c068; }
+.modal-card.flying { border-color: #a890f0; }
+.modal-card.psychic { border-color: #f85888; }
+.modal-card.bug { border-color: #a8b820; }
+.modal-card.rock { border-color: #b8a038; }
+.modal-card.ghost { border-color: #705898; }
+.modal-card.dragon { border-color: #7038f8; }
+.modal-card.dark { border-color: #705848; }
+.modal-card.steel { border-color: #b8b8d0; }
+.modal-card.fairy { border-color: #ee99ac; }
+.modal-card.normal { border-color: #a8a878; }
+
+#scrollDown {
+  position: fixed;
+  bottom: 25px;
+  right: 80px;
+
+  width: 45px;
+  height: 45px;
+
+  border-radius: 50%;
+  border: none;
+
+  background: #cc0000;
+  color: white;
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+
+  z-index: 9999;
+
+  transition: 0.2s;
+}
+
+#scrollDown:hover {
+  transform: scale(1.1);
+}
+
+#scrollDown i {
+  font-size: 18px;
 }

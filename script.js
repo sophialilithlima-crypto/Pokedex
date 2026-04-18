@@ -6,6 +6,9 @@ const modal = document.getElementById("modal");
 const modalInfo = document.getElementById("modal-info");
 const closeBtn = document.getElementById("close");
 
+const backToTopBtn = document.getElementById("backToTop");
+const scrollDownBtn = document.getElementById("scrollDown");
+
 let listaPokemons = [];
 
 let limit = 20;
@@ -24,8 +27,14 @@ function formatarNome(nome) {
   return nome.charAt(0).toUpperCase() + nome.slice(1);
 }
 
+function getHPColor(hp) {
+  if (hp < 50) return "#e63946";
+  if (hp < 100) return "#ffb703";
+  return "#4caf50";
+}
+
 /* =========================
-   FETCH COM CACHE
+   FETCH
 ========================= */
 async function fetchPokemon(nome) {
   if (cache[nome]) return cache[nome];
@@ -38,7 +47,7 @@ async function fetchPokemon(nome) {
 }
 
 /* =========================
-   PRIMEIRA EVOLUÇÃO
+   EVOLUÇÕES
 ========================= */
 async function getFirstEvolution(pokemon) {
   const speciesRes = await fetch(pokemon.species.url);
@@ -50,9 +59,6 @@ async function getFirstEvolution(pokemon) {
   return evoData.chain.species.name;
 }
 
-/* =========================
-   PRÓXIMA EVOLUÇÃO
-========================= */
 async function getNextEvolution(pokemon) {
   const speciesRes = await fetch(pokemon.species.url);
   const speciesData = await speciesRes.json();
@@ -75,26 +81,24 @@ async function getNextEvolution(pokemon) {
 }
 
 /* =========================
-   CARREGAR POKÉMONS
+   CARREGAR
 ========================= */
 async function carregarPokemons() {
   try {
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
     const data = await res.json();
 
-    // 🔥 NOVO: pega o total de pokémons
     totalPokemons = data.count;
 
-    for (let p of data.results) {
-      const pokemon = await fetchPokemon(p.name);
-      listaPokemons.push(pokemon);
-    }
+    const promises = data.results.map(p => fetchPokemon(p.name));
+    const novosPokemons = await Promise.all(promises);
+
+    listaPokemons.push(...novosPokemons);
 
     mostrarPokemons(listaPokemons);
 
-    // 🔥 NOVO: esconde botão quando acabar
     if (listaPokemons.length >= totalPokemons) {
-      loadMoreBtn.classList.add("hidden");
+      loadMoreBtn.style.display = "none";
     }
 
   } catch (erro) {
@@ -103,33 +107,37 @@ async function carregarPokemons() {
 }
 
 /* =========================
-   MOSTRAR CARDS
+   CARDS
 ========================= */
 function mostrarPokemons(lista) {
   container.innerHTML = "";
 
+  const fragment = document.createDocumentFragment();
+
   lista.forEach(pokemon => {
-    container.innerHTML += `
-      <div class="card" data-id="${pokemon.id}">
-        <h4>#${pokemon.id.toString().padStart(3, "0")}</h4>
-        <img src="${pokemon.sprites.front_default}">
-        <h3>${formatarNome(pokemon.name)}</h3>
-      </div>
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    card.innerHTML = `
+      <h4>#${pokemon.id.toString().padStart(3, "0")}</h4>
+      <img src="${pokemon.sprites.front_default}">
+      <h3>${formatarNome(pokemon.name)}</h3>
     `;
+
+    card.addEventListener("click", () => abrirModal(pokemon.id));
+
+    fragment.appendChild(card);
   });
 
-  document.querySelectorAll(".card").forEach(card => {
-    card.addEventListener("click", () => {
-      const id = parseInt(card.getAttribute("data-id"));
-      abrirModal(id);
-    });
-  });
+  container.appendChild(fragment);
 }
 
 /* =========================
-   RENDER MODAL
+   MODAL
 ========================= */
 function renderModal(pokemon, speciesData) {
+
+  // 🔥 ADIÇÃO (única mudança)
   const tipoPrincipal = pokemon.types[0].type.name;
 
   const hp = pokemon.stats.find(s => s.stat.name === "hp").base_stat;
@@ -138,8 +146,10 @@ function renderModal(pokemon, speciesData) {
   const speed = pokemon.stats.find(s => s.stat.name === "speed").base_stat;
 
   modalInfo.innerHTML = `
-    <div class="modal-card ${tipoPrincipal}" style="padding: 15px; border-radius: 10px;">
+    <div class="modal-card ${tipoPrincipal}">
+
       <h2>${formatarNome(pokemon.name)}</h2>
+
       <img src="${pokemon.sprites.front_default}">
 
       <p><strong>Geração:</strong> ${speciesData.generation.name}</p>
@@ -151,7 +161,14 @@ function renderModal(pokemon, speciesData) {
 
       <hr>
 
-      <p><strong>HP:</strong> ${hp}</p>
+      <div class="stat">
+        <span>HP</span>
+        <div class="bar">
+          <div class="fill" style="width: ${(hp / 255) * 100}%; background: ${getHPColor(hp)}"></div>
+        </div>
+        <span>${hp}</span>
+      </div>
+
       <p><strong>Ataque:</strong> ${attack}</p>
       <p><strong>Defesa:</strong> ${defense}</p>
       <p><strong>Velocidade:</strong> ${speed}</p>
@@ -162,15 +179,18 @@ function renderModal(pokemon, speciesData) {
       <button class="btn voltar" ${pokemon.name === pokemonOriginal.name ? "disabled" : ""}>
         Forma inicial
       </button>
+
     </div>
   `;
 }
 
 /* =========================
-   ABRIR MODAL
+   RESTANTE DO CÓDIGO IGUAL
 ========================= */
+
 async function abrirModal(id) {
   const pokemon = listaPokemons.find(p => p.id === id);
+  if (!pokemon) return;
 
   pokemonAtual = pokemon;
 
@@ -187,18 +207,12 @@ async function abrirModal(id) {
   configurarBotoes();
 }
 
-/* =========================
-   BOTÕES COM ANIMAÇÃO
-========================= */
 function configurarBotoes() {
   const btnEvoluir = document.querySelector(".evoluir");
   const btnVoltar = document.querySelector(".voltar");
 
   if (btnEvoluir) {
     btnEvoluir.onclick = async () => {
-
-      const card = modalInfo.firstElementChild;
-
       const nextName = await getNextEvolution(pokemonAtual);
 
       if (!nextName) {
@@ -207,91 +221,94 @@ function configurarBotoes() {
         return;
       }
 
-      // anima saída
-      card.classList.add("fade-out");
+      const novoPokemon = await fetchPokemon(nextName);
+      pokemonAtual = novoPokemon;
 
-      setTimeout(async () => {
+      const speciesRes = await fetch(novoPokemon.species.url);
+      const speciesData = await speciesRes.json();
 
-        const novoPokemon = await fetchPokemon(nextName);
-        pokemonAtual = novoPokemon;
-
-        const speciesRes = await fetch(novoPokemon.species.url);
-        const speciesData = await speciesRes.json();
-
-        renderModal(novoPokemon, speciesData);
-
-        // anima entrada
-        const novoCard = modalInfo.firstElementChild;
-        novoCard.classList.add("fade-in");
-
-        configurarBotoes();
-
-      }, 300);
+      renderModal(novoPokemon, speciesData);
+      configurarBotoes();
     };
   }
 
   if (btnVoltar && !btnVoltar.disabled) {
     btnVoltar.onclick = async () => {
+      pokemonAtual = pokemonOriginal;
 
-      const card = modalInfo.firstElementChild;
+      const speciesRes = await fetch(pokemonOriginal.species.url);
+      const speciesData = await speciesRes.json();
 
-      card.classList.add("fade-out");
-
-      setTimeout(async () => {
-
-        pokemonAtual = pokemonOriginal;
-
-        const speciesRes = await fetch(pokemonOriginal.species.url);
-        const speciesData = await speciesRes.json();
-
-        renderModal(pokemonOriginal, speciesData);
-
-        const novoCard = modalInfo.firstElementChild;
-        novoCard.classList.add("fade-in");
-
-        configurarBotoes();
-
-      }, 300);
+      renderModal(pokemonOriginal, speciesData);
+      configurarBotoes();
     };
   }
 }
 
-/* =========================
-   FECHAR MODAL
-========================= */
-closeBtn.onclick = () => {
-  modal.classList.add("hidden");
-};
+closeBtn.onclick = () => modal.classList.add("hidden");
 
 modal.onclick = (e) => {
-  if (e.target === modal) {
-    modal.classList.add("hidden");
-  }
+  if (e.target === modal) modal.classList.add("hidden");
 };
 
-/* =========================
-   BUSCA
-========================= */
+let timeoutBusca;
+
 searchInput.addEventListener("input", () => {
-  const valor = searchInput.value.toLowerCase();
+  clearTimeout(timeoutBusca);
 
-  const filtrados = listaPokemons.filter(pokemon =>
-    pokemon.name.includes(valor) ||
-    pokemon.id.toString().includes(valor)
-  );
+  timeoutBusca = setTimeout(async () => {
+    const valor = searchInput.value.toLowerCase().trim();
 
-  mostrarPokemons(filtrados);
+    if (valor === "") {
+      mostrarPokemons(listaPokemons);
+      return;
+    }
+
+    try {
+      const pokemon = await fetchPokemon(valor);
+
+      if (!listaPokemons.find(p => p.id === pokemon.id)) {
+        listaPokemons.push(pokemon);
+      }
+
+      mostrarPokemons([pokemon]);
+
+    } catch {
+      container.innerHTML = "<p>Pokémon não encontrado</p>";
+    }
+
+  }, 400);
 });
 
-/* =========================
-   CARREGAR MAIS
-========================= */
+window.addEventListener("scroll", () => {
+
+  // botão subir
+  backToTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
+
+  // botão descer (só aparece se não estiver no final)
+  const scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
+
+  if (window.scrollY < scrollTotal - 200) {
+    scrollDownBtn.style.display = "block";
+  } else {
+    scrollDownBtn.style.display = "none";
+  }
+});
+
+backToTopBtn.onclick = () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+scrollDownBtn.onclick = () => {
+  window.scrollTo({
+    top: document.body.scrollHeight,
+    behavior: "smooth"
+  });
+};
+
 loadMoreBtn.addEventListener("click", () => {
   offset += limit;
   carregarPokemons();
 });
 
-/* =========================
-   INICIAR
-========================= */
 carregarPokemons();
