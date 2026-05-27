@@ -1,10 +1,21 @@
 const container = document.getElementById("pokedex");
 const searchInput = document.getElementById("search");
 const loadMoreBtn = document.getElementById("loadMore");
+const favoritesTab =
+  document.getElementById("favoritesTab");
+const backFavoritesBtn =
+  document.createElement("button");
+
+backFavoritesBtn.id = "backFavorites";
+
+backFavoritesBtn.innerText = "Voltar";
+const pokemonCounter =
+  document.getElementById("pokemonCounter");
+
 
 const modal = document.getElementById("modal");
 const modalInfo = document.getElementById("modal-info");
-const closeBtn = document.getElementById("close");
+
 
 const backToTopBtn = document.getElementById("backToTop");
 const scrollDownBtn = document.getElementById("scrollDown");
@@ -96,6 +107,8 @@ async function carregarPokemons() {
     listaPokemons.push(...novosPokemons);
 
     mostrarPokemons(listaPokemons);
+    pokemonCounter.innerText =
+  `${lista.length} / 1025`;
 
     if (listaPokemons.length >= totalPokemons) {
       loadMoreBtn.style.display = "none";
@@ -115,13 +128,25 @@ function mostrarPokemons(lista) {
   const fragment = document.createDocumentFragment();
 
   lista.forEach(pokemon => {
+
+    const favoritos =
+    JSON.parse(localStorage.getItem("favoritos")) || [];
+
+    const isFavorite =
+    favoritos.includes(pokemon.name);
+
     const card = document.createElement("div");
     card.classList.add("card");
+
+    if (isFavorite) {
+      card.classList.add("favorite-card");
+    }
 
     card.innerHTML = `
       <h4>#${pokemon.id.toString().padStart(3, "0")}</h4>
       <img src="${pokemon.sprites.front_default}">
       <h3>${formatarNome(pokemon.name)}</h3>
+      
     `;
 
     card.addEventListener("click", () => abrirModal(pokemon.id));
@@ -146,13 +171,18 @@ function renderModal(pokemon, speciesData) {
   const speed = pokemon.stats.find(s => s.stat.name === "speed").base_stat;
 
   modalInfo.innerHTML = `
+
     <div class="modal-card ${tipoPrincipal}">
 
-      <h2>${formatarNome(pokemon.name)}</h2>
+      <div class="pokemon-title">
+        <h2>${formatarNome(pokemon.name)}</h2>
+        <button class="favorite-star">
+        <i class="fa-solid fa-star"></i></button>
+
+      </div>
 
       <img src="${pokemon.sprites.front_default}">
 
-      <p><strong>Geração:</strong> ${speciesData.generation.name}</p>
       <p><strong>Altura:</strong> ${(pokemon.height / 10).toFixed(1)} m</p>
       <p><strong>Peso:</strong> ${(pokemon.weight / 10).toFixed(1)} kg</p>
 
@@ -162,26 +192,91 @@ function renderModal(pokemon, speciesData) {
       <hr>
 
       <div class="stat">
-        <span>HP</span>
+        <span>Vida</span>
         <div class="bar">
-          <div class="fill" style="width: ${(hp / 255) * 100}%; background: ${getHPColor(hp)}"></div>
+          <div class="fill hp-fill" style="width: ${(hp / 255) * 100}%"; background: ${getHPColor(hp)}"></div>
         </div>
         <span>${hp}</span>
       </div>
 
-      <p><strong>Ataque:</strong> ${attack}</p>
-      <p><strong>Defesa:</strong> ${defense}</p>
-      <p><strong>Velocidade:</strong> ${speed}</p>
+     <div class="stat">
+      <span>Ataque</span>
+      <div class="bar">
+        <div class="fill attack-fill" style="width: ${(attack / 190) * 100}%"></div>
+      </div>
+      <span>${attack}</span>
+    </div>
+
+    <div class="stat">
+      <span>Defesa</span>
+      <div class="bar">
+        <div class="fill defense-fill" style="width: ${(defense / 230) * 100}%"></div>
+      </div>
+      <span>${defense}</span>
+    </div>
+
+    <div class="stat">
+     <span>Velocidade</span>
+      <div class="bar">
+        <div class="fill speed-fill" style="width: ${(speed / 200) * 100}%"></div>
+      </div>
+      <span>${speed}</span>
+    </div>
 
       <br>
 
-      <button class="btn evoluir">Evolução</button>
-      <button class="btn voltar" ${pokemon.name === pokemonOriginal.name ? "disabled" : ""}>
-        Forma inicial
-      </button>
+      <div class="modal-buttons">
+        <button class="btn evoluir">Evolução</button>
 
-    </div>
+        <button class="btn voltar" ${pokemon.name === pokemonOriginal.name ? "disabled" : ""} >Forma inicial</button>
+      </div>
+
   `;
+
+  configurarFavorito(pokemon);
+}
+
+/* =========================
+   FAVORITAR POKÉMON
+========================= */
+
+function configurarFavorito(pokemon) {
+
+  const starBtn = document.querySelector(".favorite-star");
+
+  let favoritos =
+    JSON.parse(localStorage.getItem("favoritos")) || [];
+
+  // verifica se já está favoritado
+  if (favoritos.includes(pokemon.name)) {
+    starBtn.classList.add("active");
+  }
+
+  starBtn.addEventListener("click", () => {
+
+    let favoritos =
+      JSON.parse(localStorage.getItem("favoritos")) || [];
+
+    if (favoritos.includes(pokemon.name)) {
+
+      favoritos = favoritos.filter(
+        f => f !== pokemon.name
+      );
+
+      starBtn.classList.remove("active");
+
+    } else {
+
+      favoritos.push(pokemon.name);
+
+      starBtn.classList.add("active");
+    }
+
+    localStorage.setItem(
+      "favoritos",
+      JSON.stringify(favoritos)
+    );
+  });
 }
 
 /* =========================
@@ -245,7 +340,6 @@ function configurarBotoes() {
   }
 }
 
-closeBtn.onclick = () => modal.classList.add("hidden");
 
 modal.onclick = (e) => {
   if (e.target === modal) modal.classList.add("hidden");
@@ -254,33 +348,24 @@ modal.onclick = (e) => {
 let timeoutBusca;
 
 searchInput.addEventListener("input", () => {
-  clearTimeout(timeoutBusca);
 
-  timeoutBusca = setTimeout(async () => {
-    const valor = searchInput.value.toLowerCase().trim();
+  const valor = searchInput.value
+    .toLowerCase();
 
-    if (valor === "") {
-      mostrarPokemons(listaPokemons);
-      return;
-    }
+  const filtrados =
+    listaPokemons.filter(pokemon =>
 
-    try {
-      const pokemon = await fetchPokemon(valor);
+      pokemon.name.includes(valor) ||
 
-      if (!listaPokemons.find(p => p.id === pokemon.id)) {
-        listaPokemons.push(pokemon);
-      }
+      pokemon.id
+        .toString()
+        .includes(valor)
+    );
 
-      mostrarPokemons([pokemon]);
-
-    } catch {
-      container.innerHTML = "<p>Pokémon não encontrado</p>";
-    }
-
-  }, 400);
+  mostrarPokemons(filtrados);
 });
 
-window.addEventListener("scroll", () => {
+  window.addEventListener("scroll", () => {
 
   // botão subir
   backToTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
@@ -310,5 +395,64 @@ loadMoreBtn.addEventListener("click", () => {
   offset += limit;
   carregarPokemons();
 });
+
+// novos
+ 
+document.addEventListener("click", (e) => {
+
+  if (e.target.classList.contains("favorite-btn")) {
+
+    e.stopPropagation();
+
+    const nome = e.target.dataset.name;
+
+    let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+
+    if (favoritos.includes(nome)) {
+      favoritos = favoritos.filter(f => f !== nome);
+      e.target.innerText = "⭐";
+    } else {
+      favoritos.push(nome);
+      e.target.innerText = "💛";
+    }
+
+    localStorage.setItem("favoritos", JSON.stringify(favoritos));
+  }
+});
+
+favoritesTab.addEventListener("click", () => {
+
+  const favoritos =
+    JSON.parse(localStorage.getItem("favoritos")) || [];
+
+  if (favoritos.length === 0) {
+
+    container.innerHTML =
+      "<p>Nenhum Pokémon favoritado.</p>";
+
+    return;
+  }
+
+  const favoritosFiltrados =
+    listaPokemons.filter(pokemon =>
+      favoritos.includes(pokemon.name)
+    );
+
+  mostrarPokemons(favoritosFiltrados);
+  backFavoritesBtn.style.display = "block";
+
+  loadMoreBtn.style.display = "none";
+});
+
+backFavoritesBtn.addEventListener("click", () => {
+
+  mostrarPokemons(listaPokemons);
+
+  backFavoritesBtn.style.display = "none";
+
+  loadMoreBtn.style.display = "block";
+});
+
+document.body.appendChild(backFavoritesBtn);
 
 carregarPokemons();

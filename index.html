@@ -15,10 +15,21 @@
 <body>
 
   <header>
-    <h1>Pokedex</h1>
+
+  <h1>Pokedex</h1>
+
+  <button id="favoritesTab">
+    <i class="fa-solid fa-star"></i>
+    Favoritos
+  </button>
+  <div id="pokemonCounter">
+    0 / 1025
+  </div>
+
+</header>
     
   </header>
-  <input type="text" id="search" placeholder="Buscar Pokémon...">
+  <input type="text" id="search" placeholder="Buscar Pokémon...">  
   <button id="backToTop">
   <i class="fas fa-arrow-up"></i></button>
   <button id="scrollDown">
@@ -32,7 +43,7 @@
 
   <div id="modal" class="modal hidden">
     <div class="modal-content">
-      <span id="close">&times;</span>
+      
       <div id="modal-info"></div>
     </div>
   </div>
@@ -41,3 +52,4 @@
 
 </body>
 </html>
+

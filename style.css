@@ -26,23 +26,27 @@ body {
   font-family: 'Montserrat', sans-serif;
   text-align: center;
   line-height: 1.5em;
-  background: #2b2b2b;
+  background: radial-gradient(circle at top, rgba(255, 0, 0, 0.068), transparent 40%),
+    radial-gradient(circle at bottom, rgba(46, 64, 197, 0.089), transparent 40%),
+    #1d1c1c;
   color: var(--texto);
 }
 
 header {
 
   background: #cc0000;
-  padding: 30px;
+  padding: 18px 25px;
   
   letter-spacing: 2px;
   font-family: 'Montserrat', sans-serif;
   font-size: 20px;
   color: white;
   text-align: center;
+  position: relative;
   font-weight: 700;
   display: flex;
   justify-content: center;
+  align-items: center;
   z-index: 1;
   width: 100%;
 }
@@ -82,6 +86,7 @@ header {
   padding: 10px;
   text-align: center;
   cursor: pointer;
+  position: relative;
 
   transition: 0.2s;
 }
@@ -129,6 +134,7 @@ header {
   border: 4px solid transparent;
   border-radius: 16px;
   padding: 20px;
+  position: relative;
 
   box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 
@@ -244,22 +250,28 @@ header {
 }
 
 .btn {
-  background: #cc0000;
-  color: white;
-
-  border-radius: 10px;
-  padding: 10px;
-
   border: none;
+  padding: 9px 14px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: 0.2s;
+  color: white;
 }
+
 
 .btn:hover {
   background: #fd6d6d;
 }
 
 .evoluir {
-  background: #4caf50;
+  background: #22c55e;
   color: white;
+}
+
+.evoluir:hover {
+  background: #16a34a;
 }
 
 .evolution-list {
@@ -278,9 +290,10 @@ header {
 }
 
 .voltar {
-  background: #cc0000;
+  background: #374151;
   color: white;
 }
+
 
 .btn:disabled {
   background: #999;
@@ -377,21 +390,23 @@ header {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin: 5px 0;
+  font-size: 14px ;
+  margin: 10px 0;
 }
 
 .bar {
   flex: 1;
   height: 8px;
-  background: #ddd;
-  border-radius: 5px;
+  background: rgba(34, 34, 34, 0.103);
+  border-radius: 8px;
   overflow: hidden;
 }
 
 .fill {
   height: 100%;
   background: #4caf50;
-  border-radius: 5px;
+  border-radius: 999px;
+  transition: width 0.3s ease;
 }
 
 .modal-card.fire { border-color: #f08030; }
@@ -447,4 +462,129 @@ header {
 
 #scrollDown i {
   font-size: 18px;
+}
+
+.attack-fill {
+  background: #ff5454;
+}
+.defense-fill {
+  background: #3793e9de;
+}
+.speed-fill {
+  background: #ffe240;
+}
+
+.favorite-star {
+  border: none;
+
+  background: transparent;
+
+  color: #9ca3af;
+
+  font-size: 20px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+
+  padding: 0;
+}
+.favorite-star.active {
+  color: #facc15;
+
+  transform: scale(1.08);
+}
+.favorite-star:hover {
+  transform: scale(1.1);
+}
+
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.pokemon-title {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-bottom: 10px;
+}
+
+.pokemon-title h2 {
+  margin: 0;
+}
+
+#favoritesTab {
+  border: none;
+
+  background: transparent;
+
+  color: #d1d5db;
+
+  font-size: 14px;
+  font-weight: 600;
+  position: absolute;
+  right: 70px;
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  transition: 0.2s;
+}
+
+#favoritesTab:hover {
+  color: #facc15;
+}
+
+#backFavorites {
+  display: none;
+
+  margin: 15px auto;
+
+  border: none;
+
+  background: #374151;
+
+  color: white;
+
+  padding: 10px 18px;
+
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+#backFavorites:hover {
+  background: #1f2937;
+}
+
+.favorite-card {
+  border: 2px solid #ff1717;
+}
+
+#pokemonCounter {
+  position: absolute;
+
+  left: 25px;
+
+  font-size: 14px;
+
+  color: #d1d5db;
 }
