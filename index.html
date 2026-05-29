@@ -1,55 +1,135 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pokedex</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex</title>
 
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="favicon.png">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
 
-  <header>
+    <div class="pokedex">
 
-  <h1>Pokedex</h1>
+        <!-- LADO ESQUERDO -->
 
-  <button id="favoritesTab">
-    <i class="fa-solid fa-star"></i>
-    Favoritos
-  </button>
-  <div id="pokemonCounter">
-    0 / 1025
-  </div>
+        <section class="left-panel">
 
-</header>
-    
-  </header>
-  <input type="text" id="search" placeholder="Buscar Pokémon...">  
-  <button id="backToTop">
-  <i class="fas fa-arrow-up"></i></button>
-  <button id="scrollDown">
-  <i class="fas fa-arrow-down"></i></button>
+            <div class="top-section">
 
-  <div id="pokedex"></div>
+                <div class="main-led"></div>
 
-  <div class="load-container">
-    <button id="loadMore">Carregar mais</button>
-  </div>
+                <div class="mini-led red"></div>
+                <div class="mini-led yellow"></div>
+                <div class="mini-led green"></div>
 
-  <div id="modal" class="modal hidden">
-    <div class="modal-content">
-      
-      <div id="modal-info"></div>
+            </div>
+
+            <div class="screen-frame">
+
+                <div class="screen-top">
+
+                    <span class="screen-light"></span>
+                    <span class="screen-light"></span>
+
+                </div>
+
+                <div class="screen">
+
+                    <input
+                        type="text"
+                        id="search"
+                        placeholder="Buscar Pokémon..."
+                    >
+
+                    <div id="pokedexList"></div>
+
+                </div>
+
+            </div>
+
+            <div class="left-controls">
+
+                <button id="loadMore">
+                    Carregar Mais
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- DOBRADIÇA -->
+
+        <div class="hinge"></div>
+
+        <!-- LADO DIREITO -->
+
+        <section class="right-panel">
+
+            <div class="pokemon-display">
+
+                <div id="pokemonInfo">
+
+                    <div class="empty-state">
+
+                        <i class="fa-solid fa-gamepad"></i>
+
+                        <h2>Pokédex</h2>
+
+                        <p>Selecione um Pokémon</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="control-row">
+
+                <button id="favoritesBtn">
+                    <i class="fa-solid fa-star"></i>
+                    Favoritos
+                </button>
+
+                <button id="backFavorites">
+                    Voltar
+                </button>
+
+            </div>
+
+            <div class="stats-screen">
+
+                <div id="pokemonCounter">
+                    0 / 0
+                </div>
+
+                <div id="evolutionArea"></div>
+
+            </div>
+
+        </section>
+
     </div>
-  </div>
 
-  <script src="script.js"></script>
+    <!-- BOTÕES FIXOS -->
+
+    <button id="backToTop">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <button id="scrollDown">
+        <i class="fa-solid fa-arrow-down"></i>
+    </button>
+
+    <script src="script.js"></script>
 
 </body>
 </html>
-
