@@ -139,6 +139,7 @@ body{
     border-radius:20px;
 
     padding:15px;
+    gap: 10px;
 
     display:flex;
     flex-direction:column;
@@ -491,3 +492,45 @@ body{
 #scrollDown:hover{
     transform:scale(1.08);
 }
+
+.raridade{
+    margin-top:8px;
+    padding:6px 12px;
+    border-radius:999px;
+    font-weight:600;
+}
+
+#typeFilter{
+    width:100%;
+
+    margin-top:0px;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:999px;
+
+    background:white;
+
+    color:#333;
+
+    font-size:14px;
+
+    font-family:'Montserrat',sans-serif;
+
+    outline:none;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+#typeFilter:hover{
+    box-shadow:0 0 8px rgba(0,0,0,.15);
+}
+
+#typeFilter:focus{
+    box-shadow:0 0 0 3px rgba(214,40,40,.3);
+}
+

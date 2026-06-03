@@ -1,10 +1,14 @@
 const pokedexList = document.getElementById("pokedexList");
 const searchInput = document.getElementById("search");
 const pokemonInfo = document.getElementById("pokemonInfo");
+const typeFilter =
+document.getElementById("typeFilter");
 
 const loadMoreBtn = document.getElementById("loadMore");
 const favoritesBtn = document.getElementById("favoritesBtn");
 const backFavoritesBtn = document.getElementById("backFavorites");
+const favoritesCount =
+document.getElementById("favoritesCount");
 
 const pokemonCounter = document.getElementById("pokemonCounter");
 
@@ -79,6 +83,10 @@ async function carregarPokemons(){
             await Promise.all(promises);
 
         listaPokemons.push(...novosPokemons);
+        console.log(
+        "Pokémons carregados:",
+        listaPokemons.length
+        );
 
         renderCards(listaPokemons);
 
@@ -102,6 +110,21 @@ async function carregarPokemons(){
 function renderCards(lista){
 
     pokedexList.innerHTML = "";
+
+    const favoritos =
+    getFavoritos();
+
+    lista.sort((a,b)=>{
+
+    const aFav =
+    favoritos.includes(a.name);
+
+    const bFav =
+    favoritos.includes(b.name);
+
+    return bFav - aFav;
+
+    });
 
     lista.forEach(pokemon => {
 
@@ -134,7 +157,7 @@ function renderCards(lista){
 
         card.addEventListener(
             "click",
-            () => mostrarPokemon(pokemon)
+            async () => await mostrarPokemon(pokemon)
         );
 
         pokedexList.appendChild(card);
@@ -146,7 +169,10 @@ function renderCards(lista){
    DETALHES
 ====================== */
 
-function mostrarPokemon(pokemon){
+async function mostrarPokemon(pokemon){
+
+    const descricao =
+    await getDescricaoPokemon(pokemon);
 
     const hp =
         pokemon.stats.find(
@@ -199,14 +225,18 @@ function mostrarPokemon(pokemon){
         <p>
             <strong>#${pokemon.id}</strong>
         </p>
-
         <p>
             <strong>Tipo:</strong>
             ${pokemon.types
-                .map(t => t.type.name)
-                .join(", ")}
+            .map(t => t.type.name)
+            .join(", ")}
         </p>
-
+        <p>
+            <strong>Raridade:</strong>
+            <span class="raridade">
+            ${getRaridade(pokemon)}
+            </span>
+        </p>
         <p>
             <strong>Altura:</strong>
             ${(pokemon.height / 10).toFixed(1)} m
@@ -215,6 +245,19 @@ function mostrarPokemon(pokemon){
         <p>
             <strong>Peso:</strong>
             ${(pokemon.weight / 10).toFixed(1)} kg
+        </p>
+
+        <p>
+            <strong>Descrição:</strong>
+        </p>
+
+        <p style="
+            margin-top:8px;
+            margin-bottom:15px;
+            font-size:14px;
+            line-height:1.5;
+            ">
+            ${descricao}
         </p>
 
         <br>
@@ -307,6 +350,8 @@ function configurarFavorito(){
                 "favoritos",
                 JSON.stringify(favoritos)
             );
+
+            atualizarContadorFavoritos();
 
             renderCards(listaPokemons);
 
@@ -422,6 +467,108 @@ scrollDownBtn.addEventListener(
 
     }
 );
+
+
+function getRaridade(pokemon){
+
+    const tipos =
+        pokemon.types.map(
+            t => t.type.name
+        );
+
+    if(
+        pokemon.id <= 151 &&
+        (
+            pokemon.name.includes("mew") ||
+            pokemon.name.includes("articuno") ||
+            pokemon.name.includes("zapdos") ||
+            pokemon.name.includes("moltres")
+        )
+    ){
+        return "Lendário";
+    }
+
+    if(
+        tipos.includes("dragon") ||
+        tipos.includes("psychic")
+    ){
+        return "Épico";
+    }
+
+    if(
+        tipos.includes("ghost") ||
+        tipos.includes("steel")
+    ){
+        return "Raro";
+    }
+
+    return "Comum";
+}
+
+function filtrarTipo(){
+
+    const tipo =
+    typeFilter.value;
+
+    if(tipo === ""){
+
+        renderCards(listaPokemons);
+
+        return;
+    }
+
+    const filtrados =
+    listaPokemons.filter(
+        pokemon =>
+
+        pokemon.types.some(
+            t => t.type.name === tipo
+        )
+    );
+
+    renderCards(filtrados);
+}
+
+typeFilter.addEventListener(
+    "change",
+    filtrarTipo
+);
+
+function atualizarContadorFavoritos(){
+
+    const favoritos =
+    getFavoritos();
+
+    favoritesCount.textContent =
+    favoritos.length;
+}
+
+async function getDescricaoPokemon(pokemon){
+
+    const res =
+    await fetch(
+        pokemon.species.url
+    );
+
+    const species =
+    await res.json();
+
+    const texto =
+    species.flavor_text_entries.find(
+        entry =>
+        entry.language.name === "en"
+    );
+
+    if(!texto){
+        return "Descrição não disponível.";
+    }
+
+    return texto.flavor_text
+        .replace(/\n/g," ")
+        .replace(/\f/g," ");
+}
+
+atualizarContadorFavoritos();
 
 /* ======================
    INICIAR
