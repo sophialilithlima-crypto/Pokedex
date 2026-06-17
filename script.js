@@ -12,8 +12,6 @@ document.getElementById("favoritesCount");
 
 const pokemonCounter = document.getElementById("pokemonCounter");
 
-const backToTopBtn = document.getElementById("backToTop");
-const scrollDownBtn = document.getElementById("scrollDown");
 
 let listaPokemons = [];
 let cache = {};
@@ -436,34 +434,6 @@ loadMoreBtn.addEventListener(
         offset += limit;
 
         carregarPokemons();
-
-    }
-);
-
-/* ======================
-   SCROLL
-====================== */
-
-backToTopBtn.addEventListener(
-    "click",
-    () => {
-
-        window.scrollTo({
-            top:0,
-            behavior:"smooth"
-        });
-
-    }
-);
-
-scrollDownBtn.addEventListener(
-    "click",
-    () => {
-
-        window.scrollTo({
-            top:document.body.scrollHeight,
-            behavior:"smooth"
-        });
 
     }
 );
