@@ -6,7 +6,8 @@ O projeto foi desenvolvido com foco em praticar consumo de API, gerenciamento de
 
 ## 📸 Demonstração
 
-![Demonstração da Pokédex](./docs/pokedex-preview.png)
+<img width="1423" height="888" alt="image" src="https://github.com/user-attachments/assets/fa9a72b3-fb25-4bba-a6ae-283d9b0d6bfc" />
+
 
 ## ✨ Funcionalidades
 
